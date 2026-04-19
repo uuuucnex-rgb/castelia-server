@@ -125,6 +125,7 @@ app.post('/api/generate', async (req, res) => {
   }
 });
 
+app.get('/', (_req, res) => res.send('DesignAI proxy is running'));
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
 app.listen(PORT, () => {
