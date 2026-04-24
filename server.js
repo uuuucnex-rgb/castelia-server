@@ -19,35 +19,25 @@ const SIZE = process.env.OPENAI_IMAGE_SIZE || '1024x1024';
 app.use(cors({ origin: '*' }));
 app.use(express.json({ limit: '50mb' }));
 
-const PROMPT_TEMPLATE = `You have two images:
-- Image 1: A photo of a real building facade or interior taken by a client
-- Image 2: A texture sample of a finishing material called "[MATERIAL_NAME]"
+const PROMPT_TEMPLATE = `You are an expert architectural visualization specialist.
 
-YOUR TASK: Переделай фасад дома или дизайн интерьера на Image 1, используя плитку из Image 2 как основной материал фасада или дизайна интерьера.
+You have two images:
+- Image 1: A photo of a real interior room or building facade taken by a client
+- Image 2: A texture sample of a premium finishing material called "[MATERIAL_NAME]"
 
-Задача: аккуратно наложить эту плитку на стены дома так, как будто она реально установлена на фасаде здания.
+YOUR TASK: Create a photorealistic visualization showing how this material would look applied to the surfaces in the client's photo.
 
 STRICT REQUIREMENTS:
-- не изменяй окна
-- не закрывай окна плиткой
-- не изменяй балконы
-- не изменяй двери
-- не изменяй крышу
-- не изменяй стекло
-- не изменяй перила
+1. Apply the material from Image 2 to ALL suitable wall/floor/facade surfaces in Image 1
+2. Perfectly preserve: camera angle, perspective, lighting conditions, shadows, room geometry
+3. Keep completely unchanged: furniture, windows, doors, ceiling, plants, people, sky, ground
+4. The material texture must follow the surface geometry naturally with correct perspective
+5. Lighting and shadows must interact realistically with the new material surface
+6. The result must look like a professional architectural render, NOT a photoshop collage
+7. Maintain the same image dimensions and composition as Image 1
+8. High quality output, sharp details, no artifacts or distortions
 
-Плитка должна появиться только на основных поверхностях стен.
-Материал должен повторять перспективу стен и архитектуру здания.
-Не делай эффект наклеенной текстуры.
-Плитка должна выглядеть как реальный установленный фасадный материал.
-Сделай фотореалистичную архитектурную визуализацию с натуральным освещением и тенями.
-Сохрани геометрию и структуру дома без изменений.
-Высокая детализация, архитектурный рендер, фотореализм.
-
-Формат изображения строго как на исходном фото, ничего не добавлять лишнего и не убирать.
-
-OUTPUT: Return only the final edited image. No text, no watermarks.
-`;
+OUTPUT: Return only the final edited image. No text, no watermarks.`;
 
 function mimeFromUrl(url) {
   const u = url.toLowerCase().split('?')[0];
