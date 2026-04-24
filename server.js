@@ -19,23 +19,42 @@ const SIZE = process.env.OPENAI_IMAGE_SIZE || '1024x1024';
 app.use(cors({ origin: '*' }));
 app.use(express.json({ limit: '50mb' }));
 
-const PROMPT_TEMPLATE = `You are an expert architectural visualization specialist.
+const PROMPT_TEMPLATE = `You have two images:
+- Image 1: A photo from a client — may be either interior room OR building facade/exterior
+- Image 2: A texture sample of a finishing material called "[MATERIAL_NAME]"
 
-You have two images:
-- Image 1: A photo of a real interior room or building facade taken by a client
-- Image 2: A texture sample of a premium finishing material called "[MATERIAL_NAME]"
+STEP 1 — Analyze Image 1 and determine type:
+- If interior: identify walls only (vertical flat surfaces between floor and ceiling)
+- If facade/exterior: identify main building walls only (flat vertical surfaces of the building)
 
-YOUR TASK: Create a photorealistic visualization showing how this material would look applied to the surfaces in the client's photo.
+STEP 2 — Apply material from Image 2 STRICTLY ONLY to wall surfaces identified in Step 1.
 
-STRICT REQUIREMENTS:
-1. Apply the material from Image 2 to ALL suitable wall/floor/facade surfaces in Image 1
-2. Perfectly preserve: camera angle, perspective, lighting conditions, shadows, room geometry
-3. Keep completely unchanged: furniture, windows, doors, ceiling, plants, people, sky, ground
-4. The material texture must follow the surface geometry naturally with correct perspective
-5. Lighting and shadows must interact realistically with the new material surface
-6. The result must look like a professional architectural render, NOT a photoshop collage
-7. Maintain the same image dimensions and composition as Image 1
-8. High quality output, sharp details, no artifacts or distortions
+ABSOLUTE RULES — NEVER APPLY material to:
+- windows (including glass, frames, sills)
+- doors (including door frames)
+- ceilings
+- floors
+- roof
+- balconies and railings
+- furniture
+- plants, trees, people, sky, ground
+- lamps, sockets, switches
+- pipes, gutters, wires
+- decorative elements that are not part of the wall
+
+ABSOLUTE RULES — PRESERVE unchanged:
+- exact camera angle, perspective, composition
+- original lighting, shadows, time of day
+- room/building geometry and proportions
+- all objects listed above (windows, doors, furniture etc.)
+- image format and dimensions — do not crop, do not add, do not remove
+
+QUALITY REQUIREMENTS:
+- Material must follow wall geometry with correct perspective
+- Natural lighting and shadows on new material surface
+- Photorealistic architectural render, not a photoshop collage
+- High detail, sharp, no artifacts
+- Must look like the material is really installed on the walls
 
 OUTPUT: Return only the final edited image. No text, no watermarks.`;
 
